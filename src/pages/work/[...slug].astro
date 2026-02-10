@@ -1,0 +1,218 @@
+---
+import { getCollection } from "astro:content";
+import { Image } from "astro:assets";
+import Layout from "../../layouts/Layout.astro";
+
+// 1. Generate paths for all artworks
+export async function getStaticPaths() {
+    const workEntries = await getCollection("work");
+    // Sort entries by category then date
+    const categoryOrder = ["Painting", "Drawing", "Sculpture", "Digital"];
+    const sortedEntries = workEntries.sort((a, b) => {
+        const catA = categoryOrder.indexOf(a.data.category);
+        const catB = categoryOrder.indexOf(b.data.category);
+
+        // If category order is different, sort by category
+        if (catA !== catB) {
+            return catA - catB;
+        }
+
+        // If same category, sort by date (newest first)
+        const dateA = a.data.date ? a.data.date.valueOf() : 0;
+        const dateB = b.data.date ? b.data.date.valueOf() : 0;
+        return dateB - dateA;
+    });
+
+    return sortedEntries.map((entry, index) => {
+        // Calculate previous and next entries (cyclic or bounded)
+        // Using cyclic navigation here (last <-> first) for infinite browsing feeling
+        const prevEntry =
+            index === 0
+                ? sortedEntries[sortedEntries.length - 1]
+                : sortedEntries[index - 1];
+        const nextEntry =
+            index === sortedEntries.length - 1
+                ? sortedEntries[0]
+                : sortedEntries[index + 1];
+
+        return {
+            params: { slug: entry.slug },
+            props: { entry, prevEntry, nextEntry },
+        };
+    });
+}
+
+// 2. Get the specific entry and render its markdown content
+const { entry, prevEntry, nextEntry } = Astro.props;
+const { Content } = await entry.render();
+---
+
+<Layout title={`${entry.data.title} | Peter Kubina Archive`}>
+    <nav
+        class="fixed top-0 left-0 w-full z-50 px-6 py-4 flex justify-between items-center bg-white/90 backdrop-blur-sm border-b border-neutral-100 text-neutral-900 dark:bg-[#171717]/90 dark:border-neutral-800 dark:text-gray-100 pointer-events-none transition-all duration-300"
+    >
+        <div class="flex gap-8 pointer-events-auto">
+            <a
+                href="/"
+                class="text-base font-medium tracking-widest uppercase hover:underline underline-offset-4 decoration-1"
+            >
+                <span class="sm:hidden">←</span>
+                <span class="hidden sm:inline">← Back to Full Gallery</span>
+            </a>
+        </div>
+
+        <a
+            href="/"
+            class="absolute left-1/2 -translate-x-1/2 font-serif text-xl text-neutral-900 dark:text-gray-100 tracking-tight pointer-events-auto hover:text-neutral-600 dark:hover:text-gray-300 transition-colors"
+        >
+            Peter Kubina
+        </a>
+
+        <div class="flex gap-8 pointer-events-auto">
+            {
+                prevEntry && (
+                    <a
+                        href={`/work/${prevEntry.slug}`}
+                        class="text-base font-medium tracking-widest uppercase hover:underline underline-offset-4 decoration-1"
+                    >
+                        Previous
+                    </a>
+                )
+            }
+            {
+                nextEntry && (
+                    <a
+                        href={`/work/${nextEntry.slug}`}
+                        class="text-base font-medium tracking-widest uppercase hover:underline underline-offset-4 decoration-1"
+                    >
+                        Next
+                    </a>
+                )
+            }
+        </div>
+    </nav>
+
+    <main class="min-h-screen w-full grid grid-cols-1 lg:grid-cols-12">
+        <section
+            class="lg:col-span-7 xl:col-span-8 bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center p-6 lg:p-12 min-h-[50vh] lg:h-screen lg:sticky lg:top-0 order-1 lg:order-1"
+        >
+            <div
+                class="relative w-full h-full flex items-center justify-center"
+            >
+                <Image
+                    src={entry.data.image}
+                    alt={entry.data.title}
+                    width={1200}
+                    quality={90}
+                    class="w-auto h-auto max-w-full max-h-[80vh] object-contain shadow-2xl shadow-black/5"
+                />
+            </div>
+        </section>
+
+        <section
+            class="lg:col-span-5 xl:col-span-4 bg-white dark:bg-neutral-900 p-8 lg:p-16 flex flex-col justify-center min-h-[50vh] order-2 lg:order-2"
+        >
+            <div class="max-w-md mx-auto w-full pt-12 lg:pt-0">
+                <header
+                    class="mb-6 border-b border-neutral-100 dark:border-neutral-800 pb-6"
+                >
+                    <span
+                        class="block text-xs font-bold tracking-widest uppercase text-neutral-500 dark:text-neutral-400 mb-3"
+                    >
+                        {entry.data.category}
+                    </span>
+                    <h1
+                        class="font-serif text-4xl lg:text-5xl leading-tight text-neutral-900 dark:text-neutral-50 mb-2"
+                    >
+                        {entry.data.title}
+                    </h1>
+                </header>
+
+                <article
+                    class="prose prose-neutral dark:prose-invert prose-p:font-serif prose-headings:font-sans prose-a:text-neutral-900 dark:prose-a:text-neutral-50 hover:prose-a:underline mb-12"
+                >
+                    <Content />
+                </article>
+
+                <dl
+                    class="grid grid-cols-[100px_1fr] gap-y-4 text-sm text-neutral-600 dark:text-neutral-400 mb-8 font-sans"
+                >
+                    <dt
+                        class="font-medium text-neutral-900 dark:text-neutral-50"
+                    >
+                        Medium
+                    </dt>
+                    <dd>{entry.data.medium}</dd>
+
+                    <dt
+                        class="font-medium text-neutral-900 dark:text-neutral-50"
+                    >
+                        Dimensions
+                    </dt>
+                    <dd>{entry.data.dimensions}</dd>
+
+                    <dt
+                        class="font-medium text-neutral-900 dark:text-neutral-50"
+                    >
+                        Status
+                    </dt>
+                    <dd
+                        class="font-medium text-neutral-900 dark:text-neutral-50"
+                    >
+                        {entry.data.status || "Private Collection"}
+                    </dd>
+                </dl>
+
+                {
+                    entry.data.status === "Available" && (
+                        <div class="mb-12 p-6 bg-stone-50 dark:bg-neutral-800 border-l-2 border-neutral-300 dark:border-neutral-600 rounded-r-md">
+                            <p class="font-serif text-neutral-700 dark:text-neutral-300 italic mb-3">
+                                "If you feel a connection to this piece, we are
+                                currently seeking a new home for it."
+                            </p>
+                            <p class="text-sm text-neutral-500 dark:text-neutral-400 font-sans">
+                                Please contact Sandra Maura directly to discuss
+                                pricing and logistics.
+                            </p>
+                            <a
+                                href={`mailto:smaura108@comcast.net?subject=Inquiry regarding: ${entry.data.title}`}
+                                class="inline-block mt-4 text-xs font-bold uppercase tracking-widest border-b border-black dark:border-white pb-1 hover:text-neutral-600 dark:hover:text-neutral-300 hover:border-neutral-400 dark:hover:border-neutral-500 transition-colors"
+                            >
+                                Email Sandra →
+                            </a>
+                        </div>
+                    )
+                }
+
+                <footer
+                    class="mt-16 pt-8 border-t border-neutral-100 dark:border-neutral-800 flex justify-between text-sm uppercase tracking-widest text-neutral-500 dark:text-neutral-500 font-medium"
+                >
+                    {
+                        prevEntry ? (
+                            <a
+                                href={`/work/${prevEntry.slug}`}
+                                class="hover:text-black dark:hover:text-white transition-colors"
+                            >
+                                ← Previous
+                            </a>
+                        ) : (
+                            <span />
+                        )
+                    }
+                    {
+                        nextEntry ? (
+                            <a
+                                href={`/work/${nextEntry.slug}`}
+                                class="hover:text-black dark:hover:text-white transition-colors"
+                            >
+                                Next →
+                            </a>
+                        ) : (
+                            <span />
+                        )
+                    }
+                </footer>
+            </div>
+        </section>
+    </main>
+</Layout>

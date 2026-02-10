@@ -1,0 +1,208 @@
+---
+import { Image } from "astro:assets";
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+    works: CollectionEntry<"work">[];
+}
+
+const { works } = Astro.props;
+---
+
+<section class="max-w-7xl mx-auto px-6 py-12">
+    <div
+        class="flex flex-wrap justify-center gap-6 mb-16 text-base tracking-widest uppercase font-medium text-neutral-500 dark:text-neutral-400"
+    >
+        <button
+            class="filter-btn hover:text-black dark:hover:text-white transition-colors active text-black dark:text-white border-b-2 border-black dark:border-white cursor-pointer"
+            data-filter="all"
+        >
+            All Works
+        </button>
+        <button
+            class="filter-btn hover:text-black dark:hover:text-white transition-colors border-b-2 border-transparent hover:border-neutral-200 dark:hover:border-neutral-700 cursor-pointer"
+            data-filter="Painting"
+        >
+            Paintings
+        </button>
+        <button
+            class="filter-btn hover:text-black dark:hover:text-white transition-colors border-b-2 border-transparent hover:border-neutral-200 dark:hover:border-neutral-700 cursor-pointer"
+            data-filter="Drawing"
+        >
+            Drawings
+        </button>
+        <button
+            class="filter-btn hover:text-black dark:hover:text-white transition-colors border-b-2 border-transparent hover:border-neutral-200 dark:hover:border-neutral-700 cursor-pointer"
+            data-filter="Sculpture"
+        >
+            Sculptures
+        </button>
+        <button
+            class="filter-btn hover:text-black dark:hover:text-white transition-colors border-b-2 border-transparent hover:border-neutral-200 dark:hover:border-neutral-700 cursor-pointer"
+            data-filter="Digital"
+        >
+            Digital
+        </button>
+    </div>
+
+    <div
+        class="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8"
+        id="gallery-grid"
+    >
+        {
+            works.map((work) => (
+                <a
+                    href={`/work/${work.slug}`}
+                    class="gallery-item group block break-inside-avoid mb-8"
+                    data-category={work.data.category}
+                >
+                    <article>
+                        <div class="relative overflow-hidden bg-neutral-100 dark:bg-neutral-800">
+                            <Image
+                                src={work.data.image}
+                                alt={work.data.title}
+                                width={800}
+                                quality={80}
+                                class="w-full h-auto object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                            />
+
+                            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-500" />
+                        </div>
+
+                        <div class="mt-4 text-center">
+                            <h3 class="font-serif text-lg text-neutral-900 dark:text-neutral-50 group-hover:text-neutral-600 dark:group-hover:text-neutral-300 transition-colors">
+                                {work.data.title}
+                            </h3>
+                            <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-1 uppercase tracking-wide">
+                                {work.data.medium}
+                            </p>
+                        </div>
+                    </article>
+                </a>
+            ))
+        }
+    </div>
+
+    <div
+        id="no-results"
+        class="hidden text-center py-20 text-neutral-400 italic font-serif"
+    >
+        No works found in this category.
+    </div>
+
+    <!-- Pagination Button -->
+    <div class="text-center mt-16">
+        <button
+            id="load-more-btn"
+            class="hidden px-8 py-3 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white hover:border-black dark:hover:border-white transition-all duration-300 text-sm tracking-widest uppercase font-medium"
+        >
+            Load More
+        </button>
+    </div>
+</section>
+
+<script>
+    // CLIENT-SIDE FILTERING & PAGINATION LOGIC
+    const buttons = document.querySelectorAll(".filter-btn");
+    const items = document.querySelectorAll(".gallery-item");
+    const noResults = document.getElementById("no-results");
+    const loadMoreBtn = document.getElementById("load-more-btn");
+    const galleryGrid = document.getElementById("gallery-grid");
+
+    // Pagination Config
+    const ITEMS_PER_PAGE = 20;
+    let visibleCount = ITEMS_PER_PAGE;
+    let activeFilter = "all";
+    let filteredItems: HTMLElement[] = [];
+
+    // Check URL params on load
+    const params = new URLSearchParams(window.location.search);
+    const initialFilter = params.get("filter") || "all";
+
+    // Initialize
+    applyFilter(initialFilter);
+
+    // Filter Button Listeners
+    buttons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+            const filterValue = btn.getAttribute("data-filter") || "all";
+            applyFilter(filterValue);
+
+            // Update URL
+            const newUrl = new URL(window.location.href);
+            if (filterValue === "all") {
+                newUrl.searchParams.delete("filter");
+            } else {
+                newUrl.searchParams.set("filter", filterValue);
+            }
+            window.history.pushState({}, "", newUrl);
+        });
+    });
+
+    // Load More Listener
+    if (loadMoreBtn) {
+        loadMoreBtn.addEventListener("click", () => {
+            visibleCount += ITEMS_PER_PAGE;
+            renderItems();
+        });
+    }
+
+    function applyFilter(filterValue: string) {
+        activeFilter = filterValue;
+        visibleCount = ITEMS_PER_PAGE; // Reset visible count on filter change
+
+        // 1. Handle Active State styling
+        buttons.forEach((b) => {
+            b.classList.remove(
+                "text-black",
+                "border-black",
+                "dark:text-white",
+                "dark:border-white",
+            );
+            b.classList.add("border-transparent");
+            if (b.getAttribute("data-filter") === filterValue) {
+                b.classList.add(
+                    "text-black",
+                    "border-black",
+                    "dark:text-white",
+                    "dark:border-white",
+                );
+                b.classList.remove("border-transparent");
+            }
+        });
+
+        // 2. Identify Filtered Items
+        filteredItems = Array.from(items).filter((item) => {
+            const itemEl = item as HTMLElement;
+            const category = itemEl.dataset.category;
+            return filterValue === "all" || category === filterValue;
+        }) as HTMLElement[];
+
+        // 3. Render Initial Batch
+        renderItems();
+    }
+
+    function renderItems() {
+        // Hide all items first
+        items.forEach((item) => ((item as HTMLElement).style.display = "none"));
+
+        // Show items up to visibleCount
+        filteredItems.slice(0, visibleCount).forEach((item) => {
+            item.style.display = "block";
+        });
+
+        // Update Load More visibility
+        if (loadMoreBtn) {
+            if (visibleCount >= filteredItems.length) {
+                loadMoreBtn.style.display = "none";
+            } else {
+                loadMoreBtn.style.display = "inline-block";
+            }
+        }
+
+        // Show "No Results" if empty
+        if (noResults) {
+            noResults.classList.toggle("hidden", filteredItems.length > 0);
+        }
+    }
+</script>

@@ -1,0 +1,61 @@
+<button
+    id="theme-toggle"
+    type="button"
+    class="text-base font-sans uppercase tracking-widest focus:outline-none flex gap-2 transition-colors text-neutral-500 dark:text-neutral-400"
+    aria-label="Toggle dark mode"
+>
+    <span
+        class="hover:text-black dark:hover:text-white transition-colors dark:text-white dark:font-medium text-neutral-300 dark:opacity-100 opacity-100 font-medium dark:font-normal dark:text-neutral-600 dark:hover:text-neutral-400"
+        >Light</span
+    >
+    <span class="text-neutral-300 dark:text-neutral-600">/</span>
+    <span
+        class="hover:text-black dark:hover:text-white transition-colors text-black font-medium dark:text-neutral-400 dark:font-normal dark:hover:text-white"
+        >Dark</span
+    >
+</button>
+
+<style>
+    /* Light Mode States */
+    :global(html:not(.dark)) #theme-toggle span:first-child {
+        color: black;
+        opacity: 1;
+    }
+    :global(html:not(.dark)) #theme-toggle span:last-child {
+        color: #a3a3a3; /* neutral-400 */
+        opacity: 0.7;
+    }
+    :global(html:not(.dark)) #theme-toggle span:last-child:hover {
+        color: black;
+        opacity: 1;
+    }
+
+    /* Dark Mode States */
+    :global(html.dark) #theme-toggle span:first-child {
+        color: #737373; /* neutral-500 */
+        opacity: 0.7;
+    }
+    :global(html.dark) #theme-toggle span:first-child:hover {
+        color: white;
+        opacity: 1;
+    }
+    :global(html.dark) #theme-toggle span:last-child {
+        color: white;
+        opacity: 1;
+    }
+</style>
+
+<script>
+    const themeToggle = document.getElementById("theme-toggle");
+
+    // Toggle theme on click
+    themeToggle?.addEventListener("click", () => {
+        if (localStorage.getItem("theme") === "dark") {
+            document.documentElement.classList.remove("dark");
+            localStorage.setItem("theme", "light");
+        } else {
+            document.documentElement.classList.add("dark");
+            localStorage.setItem("theme", "dark");
+        }
+    });
+</script>

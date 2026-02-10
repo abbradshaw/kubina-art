@@ -1,0 +1,47 @@
+---
+import { getCollection } from "astro:content";
+import MasonryGallery from "../components/MasonryGallery.astro";
+import Layout from "../layouts/Layout.astro";
+import ThemeToggle from "../components/ThemeToggle.astro";
+
+// 1. Fetch all artworks
+const allWorks = await getCollection("work");
+
+// 2. Sort them (Newest first, or by title)
+// If you have a 'date' field, use that. Otherwise sort by year.
+const sortedWorks = allWorks.sort((a, b) => {
+	return parseInt(b.data.year) - parseInt(a.data.year);
+});
+---
+
+<Layout
+	title="Peter Kubina | Archive"
+	description="The complete works of Peter Kubina"
+>
+	<header class="text-center py-20 px-6">
+		<h1
+			class="font-serif text-4xl md:text-6xl text-neutral-900 dark:text-gray-100 tracking-tight mb-4"
+		>
+			Peter Kubina
+		</h1>
+		<nav
+			class="flex justify-center items-center gap-6 text-base font-sans uppercase tracking-widest text-neutral-500 dark:text-neutral-400"
+		>
+			<a
+				href="/about"
+				class="hover:text-black dark:hover:text-white transition-colors"
+				>About the Artist</a
+			>
+			<span class="text-neutral-300 dark:text-neutral-600">•</span>
+			<span class="text-black dark:text-gray-100 font-medium"
+				>Collection</span
+			>
+			<span class="text-neutral-300 dark:text-neutral-600">•</span>
+			<ThemeToggle />
+		</nav>
+	</header>
+
+	<main class="mb-12">
+		<MasonryGallery works={sortedWorks} />
+	</main>
+</Layout>
