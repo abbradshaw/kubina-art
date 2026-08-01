@@ -49,44 +49,74 @@ const { Content } = await entry.render();
 
 <Layout title={`${entry.data.title} | Peter Kubina Archive`}>
     <nav
-        class="fixed top-0 left-0 w-full z-50 px-6 py-4 flex justify-between items-center bg-white/90 backdrop-blur-sm border-b border-neutral-100 text-neutral-900 dark:bg-[#171717]/90 dark:border-neutral-800 dark:text-gray-100 pointer-events-none transition-all duration-300"
+        class="fixed top-0 left-0 w-full z-50 bg-white/90 backdrop-blur-sm border-b border-neutral-100 text-neutral-900 dark:bg-[#171717]/90 dark:border-neutral-800 dark:text-gray-100 transition-all duration-300"
     >
-        <div class="flex gap-8 pointer-events-auto">
+        <!-- Top Row (Logo, Back Button, and Desktop Prev/Next) -->
+        <div class="px-6 py-4 flex justify-between items-center relative">
             <a
                 href="/"
                 class="text-base font-medium tracking-widest uppercase hover:underline underline-offset-4 decoration-1"
             >
-                <span class="sm:hidden">←</span>
+                <span class="sm:hidden">← Gallery</span>
                 <span class="hidden sm:inline">← Back to Full Gallery</span>
             </a>
+
+            <a
+                href="/"
+                class="absolute left-1/2 -translate-x-1/2 font-serif text-xl text-neutral-900 dark:text-gray-100 tracking-tight hover:text-neutral-600 dark:hover:text-gray-300 transition-colors"
+            >
+                Peter Kubina
+            </a>
+
+            <!-- Desktop Previous/Next (Hidden on Mobile) -->
+            <div class="hidden md:flex gap-8">
+                {
+                    prevEntry && (
+                        <a
+                            href={`/work/${prevEntry.slug}`}
+                            class="text-base font-medium tracking-widest uppercase hover:underline underline-offset-4 decoration-1"
+                        >
+                            Previous
+                        </a>
+                    )
+                }
+                {
+                    nextEntry && (
+                        <a
+                            href={`/work/${nextEntry.slug}`}
+                            class="text-base font-medium tracking-widest uppercase hover:underline underline-offset-4 decoration-1"
+                        >
+                            Next
+                        </a>
+                    )
+                }
+            </div>
         </div>
 
-        <a
-            href="/"
-            class="absolute left-1/2 -translate-x-1/2 font-serif text-xl text-neutral-900 dark:text-gray-100 tracking-tight pointer-events-auto hover:text-neutral-600 dark:hover:text-gray-300 transition-colors"
-        >
-            Peter Kubina
-        </a>
-
-        <div class="flex gap-8 pointer-events-auto">
+        <!-- Mobile Previous/Next Row (Hidden on Desktop) -->
+        <div class="md:hidden flex justify-between border-t border-neutral-100 dark:border-neutral-800/50 px-6 py-2.5 bg-white/50 dark:bg-[#171717]/50">
             {
-                prevEntry && (
+                prevEntry ? (
                     <a
                         href={`/work/${prevEntry.slug}`}
-                        class="text-base font-medium tracking-widest uppercase hover:underline underline-offset-4 decoration-1"
+                        class="text-sm font-medium tracking-widest uppercase hover:underline underline-offset-4 decoration-1"
                     >
-                        Previous
+                        ← Previous
                     </a>
+                ) : (
+                    <span />
                 )
             }
             {
-                nextEntry && (
+                nextEntry ? (
                     <a
                         href={`/work/${nextEntry.slug}`}
-                        class="text-base font-medium tracking-widest uppercase hover:underline underline-offset-4 decoration-1"
+                        class="text-sm font-medium tracking-widest uppercase hover:underline underline-offset-4 decoration-1"
                     >
-                        Next
+                        Next →
                     </a>
+                ) : (
+                    <span />
                 )
             }
         </div>
