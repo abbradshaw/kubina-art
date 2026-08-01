@@ -1,56 +1,38 @@
 <button
     id="theme-toggle"
     type="button"
-    class="text-base font-sans uppercase tracking-widest focus:outline-none flex gap-2 transition-colors text-neutral-500 dark:text-neutral-400"
+    class="p-2.5 rounded-full border border-neutral-200 dark:border-neutral-800 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 hover:text-black dark:hover:text-white transition-all duration-300 focus:outline-none focus:ring-1 focus:ring-neutral-400 dark:focus:ring-neutral-600"
     aria-label="Toggle dark mode"
+    title="Toggle dark mode"
 >
-    <span
-        class="hover:text-black dark:hover:text-white transition-colors dark:text-white dark:font-medium text-neutral-300 dark:opacity-100 opacity-100 font-medium dark:font-normal dark:text-neutral-600 dark:hover:text-neutral-400"
-        >Light</span
+    <!-- Sun Icon (Visible in Dark Mode to switch to Light Mode) -->
+    <svg 
+        class="h-5 w-5 hidden dark:block transform transition-transform duration-500 rotate-0 hover:rotate-45" 
+        fill="none" 
+        viewBox="0 0 24 24" 
+        stroke="currentColor" 
+        stroke-width="1.5"
     >
-    <span class="text-neutral-300 dark:text-neutral-600">/</span>
-    <span
-        class="hover:text-black dark:hover:text-white transition-colors text-black font-medium dark:text-neutral-400 dark:font-normal dark:hover:text-white"
-        >Dark</span
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+    </svg>
+    
+    <!-- Moon Icon (Visible in Light Mode to switch to Dark Mode) -->
+    <svg 
+        class="h-5 w-5 block dark:hidden transform transition-transform duration-500 -rotate-12 hover:-rotate-0" 
+        fill="none" 
+        viewBox="0 0 24 24" 
+        stroke="currentColor" 
+        stroke-width="1.5"
     >
+        <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+    </svg>
 </button>
-
-<style>
-    /* Light Mode States */
-    :global(html:not(.dark)) #theme-toggle span:first-child {
-        color: black;
-        opacity: 1;
-    }
-    :global(html:not(.dark)) #theme-toggle span:last-child {
-        color: #a3a3a3; /* neutral-400 */
-        opacity: 0.7;
-    }
-    :global(html:not(.dark)) #theme-toggle span:last-child:hover {
-        color: black;
-        opacity: 1;
-    }
-
-    /* Dark Mode States */
-    :global(html.dark) #theme-toggle span:first-child {
-        color: #737373; /* neutral-500 */
-        opacity: 0.7;
-    }
-    :global(html.dark) #theme-toggle span:first-child:hover {
-        color: white;
-        opacity: 1;
-    }
-    :global(html.dark) #theme-toggle span:last-child {
-        color: white;
-        opacity: 1;
-    }
-</style>
 
 <script>
     const themeToggle = document.getElementById("theme-toggle");
 
-    // Toggle theme on click
     themeToggle?.addEventListener("click", () => {
-        if (localStorage.getItem("theme") === "dark") {
+        if (document.documentElement.classList.contains("dark")) {
             document.documentElement.classList.remove("dark");
             localStorage.setItem("theme", "light");
         } else {

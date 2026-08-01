@@ -2,7 +2,6 @@
 import { getCollection } from "astro:content";
 import MasonryGallery from "../components/MasonryGallery.astro";
 import Layout from "../layouts/Layout.astro";
-import ThemeToggle from "../components/ThemeToggle.astro";
 
 // 1. Fetch all artworks
 const allWorks = await getCollection("work");
@@ -36,8 +35,6 @@ const sortedWorks = allWorks.sort((a, b) => {
 			<span class="text-black dark:text-gray-100 font-medium"
 				>Collection</span
 			>
-			<span class="text-neutral-300 dark:text-neutral-600">•</span>
-			<ThemeToggle />
 		</nav>
 	</header>
 

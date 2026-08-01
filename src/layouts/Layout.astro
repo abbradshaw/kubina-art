@@ -1,5 +1,6 @@
 ---
 import "../styles/global.css";
+import ThemeToggle from "../components/ThemeToggle.astro";
 
 interface Props {
 	title: string;
@@ -59,7 +60,10 @@ const { title, description = "A memorial portfolio." } = Astro.props;
 			}
 		});
 	</script>
-	<body class="min-h-screen flex flex-col">
+	<body class="min-h-screen flex flex-col relative">
+		<div class="absolute top-6 right-6 md:top-8 md:right-8 z-50">
+			<ThemeToggle />
+		</div>
 		<slot />
 
 		<footer

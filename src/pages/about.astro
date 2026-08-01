@@ -2,7 +2,6 @@
 import { getEntry } from "astro:content";
 import { Image } from "astro:assets";
 import Layout from "../layouts/Layout.astro";
-import ThemeToggle from "../components/ThemeToggle.astro";
 
 // 1. Fetch the biography content (Assuming a singleton pattern or specific ID)
 // You might need to adjust 'pages' to match your actual collection name for static pages
@@ -37,8 +36,6 @@ const { Content } = await bioEntry.render();
                 class="hover:text-black dark:hover:text-white transition-colors"
                 >Collection</a
             >
-            <span class="text-neutral-300 dark:text-neutral-600">•</span>
-            <ThemeToggle />
         </nav>
     </header>
 
