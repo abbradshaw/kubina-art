@@ -78,12 +78,12 @@ async function run() {
       const width = metadata.width || 800;
       const height = metadata.height || 600;
 
-      // Calculate watermark sizing dynamically based on image size
-      const fontSize = Math.max(32, Math.round(width * 0.05)); // ~5% of image width
-      const padding = Math.max(20, Math.round(width * 0.03));
+      // Calculate watermark sizing dynamically based on image size (3x larger)
+      const fontSize = Math.max(60, Math.round(width * 0.08)); // ~8% of image width
+      const padding = Math.max(40, Math.round(width * 0.04));
 
       // Create an SVG text overlay
-      // Grey color, semi-transparent (opacity 0.45)
+      // White text with a solid black outline, fully opaque
       const svgText = `
         <svg width="${width}" height="${height}">
           <style>
@@ -91,8 +91,12 @@ async function run() {
               font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
               font-size: ${fontSize}px;
               font-weight: bold;
-              fill: #888888;
-              fill-opacity: 0.85;
+              fill: #ffffff;
+              fill-opacity: 1.0;
+              stroke: #000000;
+              stroke-width: ${Math.max(2, Math.round(fontSize * 0.15))}px;
+              stroke-opacity: 1.0;
+              paint-order: stroke fill;
               text-anchor: end;
             }
           </style>
