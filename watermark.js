@@ -92,7 +92,7 @@ async function run() {
               font-size: ${fontSize}px;
               font-weight: bold;
               fill: #888888;
-              fill-opacity: 0.20;
+              fill-opacity: 0.85;
               text-anchor: end;
             }
           </style>
