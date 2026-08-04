@@ -78,9 +78,9 @@ async function run() {
       const width = metadata.width || 800;
       const height = metadata.height || 600;
 
-      // Calculate watermark sizing dynamically based on image size (3x larger)
-      const fontSize = Math.max(60, Math.round(width * 0.08)); // ~8% of image width
-      const padding = Math.max(40, Math.round(width * 0.04));
+      // Calculate watermark sizing dynamically based on image size (another 200% larger)
+      const fontSize = Math.max(120, Math.round(width * 0.15)); // ~15% of image width
+      const padding = Math.max(80, Math.round(width * 0.06));
 
       // Create an SVG text overlay
       // White text with a solid black outline, fully opaque
