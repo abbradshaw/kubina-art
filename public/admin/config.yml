@@ -65,6 +65,13 @@ collections:
             name: "pull_quote"
             widget: "text"
             hint: "A short quote to display next to the photo."
-          - label: "Biography"
-            name: "body"
-            widget: "markdown"
+          - label: "Biography Chapters"
+            name: "chapters"
+            widget: "list"
+            summary: "{{fields.label}} - {{fields.title}}"
+            fields:
+              - {label: "Label (e.g., Chapter I)", name: "label", widget: "string"}
+              - {label: "Chapter Title", name: "title", widget: "string"}
+              - {label: "Text Content", name: "text", widget: "text"}
+              - {label: "Interspersed Artwork", name: "artwork", widget: "image", required: false}
+              - {label: "Artwork Caption", name: "caption", widget: "string", required: false}

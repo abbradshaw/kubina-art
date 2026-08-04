@@ -3,119 +3,125 @@ import { getEntry } from "astro:content";
 import { Image } from "astro:assets";
 import Layout from "../layouts/Layout.astro";
 
-// 1. Fetch the biography content (Assuming a singleton pattern or specific ID)
-// You might need to adjust 'pages' to match your actual collection name for static pages
+// 1. Fetch the biography content
 const bioEntry = await getEntry("pages", "about");
 if (!bioEntry) {
     throw new Error("About page entry not found");
 }
-const { Content } = await bioEntry.render();
 
-// Placeholder for signature if you have one scanned (adds a nice personal touch)
-// const signatureImg = "...";
+const { title, image: portraitPhoto, pull_quote, chapters = [] } = bioEntry.data;
 ---
 
 <Layout title="About the Artist | Peter Kubina Archive">
-    <header class="text-center py-20 px-6">
-        <h1
-            class="font-serif text-4xl md:text-6xl text-neutral-900 dark:text-gray-100 tracking-tight mb-4"
-        >
-            <a href="/" class="hover:text-neutral-600 transition-colors"
-                >Peter Kubina</a
-            >
+    <!-- Header -->
+    <header class="text-center py-16 px-6 border-b border-neutral-100 dark:border-neutral-800">
+        <h1 class="font-serif text-4xl md:text-6xl text-neutral-900 dark:text-gray-100 tracking-tight mb-4">
+            <a href="/" class="hover:text-neutral-600 transition-colors">Peter Kubina</a>
         </h1>
-        <nav
-            class="flex justify-center items-center gap-6 text-base font-sans uppercase tracking-widest text-neutral-500 dark:text-neutral-400"
-        >
-            <span class="text-black dark:text-gray-100 font-medium"
-                >About the Artist</span
-            >
+        <nav class="flex justify-center items-center gap-6 text-base font-sans uppercase tracking-widest text-neutral-500 dark:text-neutral-400">
+            <span class="text-black dark:text-gray-100 font-medium">About the Artist</span>
             <span class="text-neutral-300 dark:text-neutral-600">•</span>
-            <a
-                href="/"
-                class="hover:text-black dark:hover:text-white transition-colors"
-                >Collection</a
-            >
+            <a href="/" class="hover:text-black dark:hover:text-white transition-colors">Collection</a>
         </nav>
     </header>
 
-    <main class="max-w-4xl mx-auto px-6 pb-24 pt-8">
-        <header class="flex flex-col items-center mb-16 text-center">
-            <div class="mb-8">
-                <div
-                    class="relative w-48 h-56 md:w-56 md:h-72 bg-white dark:bg-neutral-800 p-3 shadow-xl ring-1 ring-neutral-900/5 dark:ring-white/5"
-                >
-                    <div
-                        class="w-full h-full overflow-hidden bg-neutral-200 dark:bg-neutral-700 relative"
-                    >
+    <main class="max-w-6xl mx-auto px-6 py-16">
+        <!-- Hero Section / Introduction -->
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center mb-24">
+            <div class="lg:col-span-5 flex justify-center">
+                <div class="relative bg-white dark:bg-neutral-800 p-4 shadow-2xl ring-1 ring-neutral-900/5 dark:ring-white/5 transition-transform duration-300 hover:scale-[1.02]">
+                    <div class="w-64 h-80 md:w-80 md:h-[400px] overflow-hidden bg-neutral-200 dark:bg-neutral-700 relative">
                         <Image
-                            src={bioEntry.data.image}
-                            alt="Portrait of the artist"
-                            width={400}
-                            height={500}
+                            src={portraitPhoto}
+                            alt="Portrait of Peter Kubina"
                             class="w-full h-full object-cover"
                         />
-                        <div
-                            class="absolute inset-0 shadow-[inset_0_0_20px_rgba(0,0,0,0.1)] pointer-events-none"
-                        >
-                        </div>
+                        <div class="absolute inset-0 shadow-[inset_0_0_20px_rgba(0,0,0,0.15)] pointer-events-none"></div>
                     </div>
                 </div>
             </div>
-
-            <h1
-                class="font-serif text-5xl md:text-6xl text-neutral-900 dark:text-neutral-50 mb-4"
-            >
-                {bioEntry.data.title}
-            </h1>
-
-            <p
-                class="text-sm font-sans uppercase tracking-widest text-neutral-500 dark:text-neutral-400"
-            >
-                1927 &mdash; 2010
-            </p>
-        </header>
-
-        <hr
-            class="w-12 border-neutral-300 dark:border-neutral-700 mx-auto mb-16"
-        />
-
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
-            <aside class="lg:col-span-4">
-                <blockquote
-                    class="font-serif text-2xl italic text-neutral-800 dark:text-neutral-200 leading-relaxed border-l-2 border-neutral-900 dark:border-neutral-100 pl-6 sticky top-24"
-                >
-                    "{
-                        bioEntry.data.pull_quote ||
-                            "Art is the elimination of the unnecessary."
-                    }"
-                </blockquote>
-            </aside>
-
-            <div class="lg:col-span-8">
-                <article
-                    class="prose prose-neutral dark:prose-invert prose-lg prose-p:font-light prose-p:leading-8 prose-headings:font-serif prose-headings:font-normal"
-                >
-                    <Content />
-                </article>
-
-                <div class="mt-16 text-center">
-                    <a
-                        href="/"
-                        class="inline-block px-8 py-3 border border-neutral-900 dark:border-neutral-100 text-neutral-900 dark:text-neutral-100 text-sm font-medium uppercase tracking-widest hover:bg-neutral-900 dark:hover:bg-neutral-100 hover:text-white dark:hover:text-neutral-900 transition-colors duration-300"
-                    >
-                        View Gallery
-                    </a>
+            
+            <div class="lg:col-span-7 flex flex-col justify-center">
+                <span class="text-sm font-sans uppercase tracking-widest text-neutral-400 dark:text-neutral-500 mb-2">Biography</span>
+                <h2 class="font-serif text-4xl md:text-5xl text-neutral-900 dark:text-neutral-50 mb-6">
+                    A Spiritual Language of Universal Forms
+                </h2>
+                <p class="text-sm font-sans uppercase tracking-widest text-neutral-500 dark:text-neutral-400 mb-6">
+                    September 11, 1940 &mdash; July 14, 2016
+                </p>
+                <div class="prose prose-neutral dark:prose-invert prose-lg">
+                    <p class="font-light leading-relaxed text-neutral-600 dark:text-neutral-300">
+                        Peter Kubina was an artist whose work spanned six decades, moving from woodcarving and bronze sculpture to painting and digital art. His creations were not attached to a particular national, cultural, or religious tradition, but instead created a spiritual impact through a language understood by many cultures.
+                    </p>
                 </div>
+                
+                {pull_quote && (
+                    <blockquote class="mt-8 font-serif text-xl italic text-neutral-700 dark:text-neutral-300 border-l-2 border-neutral-900 dark:border-neutral-100 pl-6">
+                        "{pull_quote}"
+                    </blockquote>
+                )}
             </div>
+        </section>
+
+        <hr class="border-neutral-200 dark:border-neutral-800 my-16" />
+
+        <!-- Editorial Timeline Sections (Dynamically Editable from CMS) -->
+        {chapters.map((chapter, index) => {
+            const isEven = index % 2 === 0;
+            return (
+                <section class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start mb-24">
+                    {/* Text Column */}
+                    <div class={`lg:col-span-7 ${isEven ? 'lg:order-1' : 'lg:order-2'}`}>
+                        <span class="font-serif text-base italic text-neutral-600 dark:text-neutral-300 block mb-2">
+                            {chapter.label}
+                        </span>
+                        <h3 class="font-serif text-3xl text-neutral-900 dark:text-neutral-50 mb-6">
+                            {chapter.title}
+                        </h3>
+                        <div class="prose prose-neutral dark:prose-invert prose-p:font-light prose-p:leading-8 space-y-6">
+                            {chapter.text.split('\n\n').map((paragraph) => (
+                                <p>{paragraph}</p>
+                            ))}
+                        </div>
+                    </div>
+                    
+                    {/* Image Column */}
+                    {chapter.artwork && (
+                        <div class={`lg:col-span-5 lg:sticky lg:top-24 mt-8 lg:mt-0 ${isEven ? 'lg:order-2' : 'lg:order-1'}`}>
+                            <figure class="group">
+                                <div class="overflow-hidden bg-neutral-100 dark:bg-neutral-800 p-3 shadow-lg border border-neutral-200/50 dark:border-neutral-700/50">
+                                    <Image
+                                        src={chapter.artwork}
+                                        alt={chapter.caption || chapter.title}
+                                        class="w-full object-cover transition-all duration-500"
+                                    />
+                                </div>
+                                {chapter.caption && (
+                                    <figcaption class={`mt-3 text-sm font-serif italic text-neutral-600 dark:text-neutral-300 ${isEven ? 'text-right' : ''}`}>
+                                        {chapter.caption}
+                                    </figcaption>
+                                )}
+                            </figure>
+                        </div>
+                    )}
+                </section>
+            );
+        })}
+
+        <!-- Gallery Link CTA -->
+        <div class="mt-16 text-center border-t border-neutral-100 dark:border-neutral-800 pt-16">
+            <a
+                href="/"
+                class="inline-block px-12 py-4 border border-neutral-900 dark:border-neutral-100 text-neutral-900 dark:text-neutral-100 text-sm font-semibold uppercase tracking-widest hover:bg-neutral-900 dark:hover:bg-neutral-100 hover:text-white dark:hover:text-neutral-900 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5"
+            >
+                View the Collection
+            </a>
         </div>
     </main>
 
-    <footer
-        class="text-center py-12 border-t border-neutral-200 dark:border-neutral-800 mt-12"
-    >
+    <footer class="text-center py-12 border-t border-neutral-200 dark:border-neutral-800 mt-12">
         <p class="text-neutral-400 text-sm font-serif italic">
-            Curated by the artist's family.
+            Curated with love by the artist's family.
         </p>
     </footer>
 </Layout>

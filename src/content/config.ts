@@ -22,6 +22,13 @@ const pagesCollection = defineCollection({
 		title: z.string(),
 		image: image(),
 		pull_quote: z.string().optional(),
+		chapters: z.array(z.object({
+			label: z.string(),
+			title: z.string(),
+			text: z.string(),
+			artwork: image().optional(),
+			caption: z.string().optional(),
+		})).optional(),
 	}),
 });
 
