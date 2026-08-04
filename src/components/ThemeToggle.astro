@@ -1,35 +1,56 @@
-<button
-    id="theme-toggle"
-    type="button"
-    class="p-2.5 rounded-full border border-neutral-200 dark:border-neutral-800 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 hover:text-black dark:hover:text-white transition-all duration-300 focus:outline-none focus:ring-1 focus:ring-neutral-400 dark:focus:ring-neutral-600"
-    aria-label="Toggle dark mode"
-    title="Toggle dark mode"
->
-    <!-- Sun Icon (Visible in Dark Mode to switch to Light Mode) -->
-    <svg 
-        class="h-5 w-5 hidden dark:block transform transition-transform duration-500 rotate-0 hover:rotate-45" 
-        fill="none" 
-        viewBox="0 0 24 24" 
-        stroke="currentColor" 
-        stroke-width="1.5"
+<div class="flex items-center gap-3">
+    <span 
+        id="theme-toggle-text" 
+        class="text-xs uppercase tracking-widest text-neutral-500 dark:text-neutral-400 font-sans select-none"
     >
-        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
-    </svg>
-    
-    <!-- Moon Icon (Visible in Light Mode to switch to Dark Mode) -->
-    <svg 
-        class="h-5 w-5 block dark:hidden transform transition-transform duration-500 -rotate-12 hover:-rotate-0" 
-        fill="none" 
-        viewBox="0 0 24 24" 
-        stroke="currentColor" 
-        stroke-width="1.5"
+        Switch to Dark Mode
+    </span>
+    <button
+        id="theme-toggle"
+        type="button"
+        class="p-2.5 rounded-full border border-neutral-200 dark:border-neutral-800 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 hover:text-black dark:hover:text-white transition-all duration-300 focus:outline-none focus:ring-1 focus:ring-neutral-400 dark:focus:ring-neutral-600"
+        aria-label="toggle dark/light mode"
+        title="Toggle dark mode"
     >
-        <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
-    </svg>
-</button>
+        <!-- Sun Icon (Visible in Dark Mode to switch to Light Mode) -->
+        <svg 
+            class="h-5 w-5 hidden dark:block transform transition-transform duration-500 rotate-0 hover:rotate-45" 
+            fill="none" 
+            viewBox="0 0 24 24" 
+            stroke="currentColor" 
+            stroke-width="1.5"
+            aria-label="toggle dark/light mode"
+        >
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+        </svg>
+        
+        <!-- Moon Icon (Visible in Light Mode to switch to Dark Mode) -->
+        <svg 
+            class="h-5 w-5 block dark:hidden transform transition-transform duration-500 -rotate-12 hover:-rotate-0" 
+            fill="none" 
+            viewBox="0 0 24 24" 
+            stroke="currentColor" 
+            stroke-width="1.5"
+            aria-label="toggle dark/light mode"
+        >
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+        </svg>
+    </button>
+</div>
 
 <script>
     const themeToggle = document.getElementById("theme-toggle");
+    const themeToggleText = document.getElementById("theme-toggle-text");
+
+    function updateThemeText() {
+        if (themeToggleText) {
+            const isDark = document.documentElement.classList.contains("dark");
+            themeToggleText.textContent = isDark ? "Switch to Light Mode" : "Switch to Dark Mode";
+        }
+    }
+
+    // Initialize text on mount
+    updateThemeText();
 
     themeToggle?.addEventListener("click", () => {
         if (document.documentElement.classList.contains("dark")) {
@@ -39,5 +60,6 @@
             document.documentElement.classList.add("dark");
             localStorage.setItem("theme", "dark");
         }
+        updateThemeText();
     });
 </script>
