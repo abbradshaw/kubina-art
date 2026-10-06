@@ -9,12 +9,21 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@sanity/image-url": "^2.1.1",
     "@tailwindcss/vite": "^4.1.18",
     "astro": "^5.16.7",
+    "marked": "^18.0.14",
     "tailwindcss": "^4.1.18"
   },
   "devDependencies": {
+    "@portabletext/block-tools": "^2.0.8",
+    "@sanity/client": "^8.9.0",
     "@tailwindcss/typography": "^0.5.19",
-    "sharp": "^0.35.3"
+    "gray-matter": "^4.0.3",
+    "rehype-stringify": "^10.0.1",
+    "remark-parse": "^11.0.0",
+    "remark-rehype": "^11.1.2",
+    "sharp": "^0.35.3",
+    "unified": "^11.0.5"
   }
 }

@@ -1,16 +1,12 @@
 ---
-import { getCollection } from "astro:content";
-import MasonryGallery from "../components/MasonryGallery.astro";
 import Layout from "../layouts/Layout.astro";
+import MasonryGallery from "../components/MasonryGallery.astro";
+import { getAllWorks } from "../lib/works";
 
-// 1. Fetch all artworks
-const allWorks = await getCollection("work");
-
-// 2. Sort them (Newest first, or by title)
-// If you have a 'date' field, use that. Otherwise sort by year.
-const sortedWorks = allWorks.sort((a, b) => {
-	return parseInt(b.data.year) - parseInt(a.data.year);
-});
+const allWorks = await getAllWorks();
+const sortedWorks = allWorks.sort(
+	(a, b) => parseInt(b.year) - parseInt(a.year),
+);
 ---
 
 <Layout

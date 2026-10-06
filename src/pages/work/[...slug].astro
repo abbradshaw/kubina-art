@@ -1,57 +1,35 @@
 ---
-import { getCollection } from "astro:content";
-import { Image } from "astro:assets";
 import Layout from "../../layouts/Layout.astro";
+import { marked } from "marked";
+import { sanityClient, artworkSrc } from "../../lib/sanity";
+import { getAllWorks, sortWorks } from "../../lib/works";
 
-// 1. Generate paths for all artworks
 export async function getStaticPaths() {
-    const workEntries = await getCollection("work");
-    // Sort entries by category then date
-    const categoryOrder = ["Painting", "Drawing", "Sculpture", "Digital"];
-    const sortedEntries = workEntries.sort((a, b) => {
-        const catA = categoryOrder.indexOf(a.data.category);
-        const catB = categoryOrder.indexOf(b.data.category);
-
-        // If category order is different, sort by category
-        if (catA !== catB) {
-            return catA - catB;
-        }
-
-        // If same category, sort by date (newest first)
-        const dateA = a.data.date ? a.data.date.valueOf() : 0;
-        const dateB = b.data.date ? b.data.date.valueOf() : 0;
-        return dateB - dateA;
-    });
-
-    return sortedEntries.map((entry, index) => {
-        // Calculate previous and next entries (cyclic or bounded)
-        // Using cyclic navigation here (last <-> first) for infinite browsing feeling
-        const prevEntry =
-            index === 0
-                ? sortedEntries[sortedEntries.length - 1]
-                : sortedEntries[index - 1];
-        const nextEntry =
-            index === sortedEntries.length - 1
-                ? sortedEntries[0]
-                : sortedEntries[index + 1];
-
-        return {
-            params: { slug: entry.slug },
-            props: { entry, prevEntry, nextEntry },
-        };
-    });
+    const works = sortWorks(await getAllWorks());
+    return works.map((work) => ({
+        params: { slug: work.slug },
+    }));
 }
 
-// 2. Get the specific entry and render its markdown content
-const { entry, prevEntry, nextEntry } = Astro.props;
-const { Content } = await entry.render();
+const { slug } = Astro.params;
+
+const [entry, allWorks] = await Promise.all([
+    sanityClient.fetch(`*[_type == "work" && slug.current == $slug][0]`, { slug }),
+    sanityClient.fetch(`*[_type == "work"]{title, "slug": slug.current, category}`),
+]);
+
+if (!entry) return Astro.redirect("/404");
+
+const ordered = sortWorks(allWorks);
+const index = ordered.findIndex((w) => w.slug === slug);
+const prevEntry = index === 0 ? ordered[ordered.length - 1] : ordered[index - 1];
+const nextEntry = index === ordered.length - 1 ? ordered[0] : ordered[index + 1];
 ---
 
-<Layout title={`${entry.data.title} | Peter Kubina Archive`}>
+<Layout title={`${entry.title} | Peter Kubina Archive`}>
     <nav
         class="fixed top-0 left-0 w-full z-50 bg-white/90 backdrop-blur-sm border-b border-neutral-100 text-neutral-900 dark:bg-[#171717]/90 dark:border-neutral-800 dark:text-gray-100 transition-all duration-300"
     >
-        <!-- Top Row (Logo, Back Button, and Desktop Prev/Next) -->
         <div class="px-6 py-4 flex justify-between items-center relative">
             <a
                 href="/"
@@ -68,7 +46,6 @@ const { Content } = await entry.render();
                 Peter Kubina
             </a>
 
-            <!-- Desktop Previous/Next (Hidden on Mobile) -->
             <div class="hidden md:flex gap-8">
                 {
                     prevEntry && (
@@ -93,7 +70,6 @@ const { Content } = await entry.render();
             </div>
         </div>
 
-        <!-- Mobile Previous/Next Row (Hidden on Desktop) -->
         <div class="md:hidden flex justify-between border-t border-neutral-100 dark:border-neutral-800/50 px-6 py-2.5 bg-white/50 dark:bg-[#171717]/50">
             {
                 prevEntry ? (
@@ -126,14 +102,12 @@ const { Content } = await entry.render();
         <section
             class="lg:col-span-7 xl:col-span-8 bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center pt-28 pb-6 px-6 lg:p-12 min-h-[50vh] lg:h-screen lg:sticky lg:top-0 order-1 lg:order-1"
         >
-            <div
-                class="relative w-full h-full flex items-center justify-center"
-            >
-                <Image
-                    src={entry.data.image}
-                    alt={entry.data.title}
-                    width={1200}
-                    quality={90}
+            <div class="relative w-full h-full flex items-center justify-center">
+                <img
+                    src={artworkSrc(entry.image, 1600)}
+                    srcset={`${artworkSrc(entry.image, 800)} 800w, ${artworkSrc(entry.image, 1200)} 1200w, ${artworkSrc(entry.image, 1600)} 1600w`}
+                    sizes="(max-width: 1024px) 100vw, 66vw"
+                    alt={entry.title}
                     class="w-auto h-auto max-w-full max-h-[75vh] object-contain shadow-2xl shadow-black/5"
                 />
             </div>
@@ -143,69 +117,43 @@ const { Content } = await entry.render();
             class="lg:col-span-5 xl:col-span-4 bg-white dark:bg-neutral-900 p-8 lg:p-16 flex flex-col justify-center min-h-[50vh] order-2 lg:order-2"
         >
             <div class="max-w-md mx-auto w-full pt-12 lg:pt-0">
-                <header
-                    class="mb-6 border-b border-neutral-100 dark:border-neutral-800 pb-6"
-                >
-                    <span
-                        class="block text-xs font-bold tracking-widest uppercase text-neutral-500 dark:text-neutral-400 mb-3"
-                    >
-                        {entry.data.category}
+                <header class="mb-6 border-b border-neutral-100 dark:border-neutral-800 pb-6">
+                    <span class="block text-xs font-bold tracking-widest uppercase text-neutral-500 dark:text-neutral-400 mb-3">
+                        {entry.category}
                     </span>
-                    <h1
-                        class="font-serif text-4xl lg:text-5xl leading-tight text-neutral-900 dark:text-neutral-50 mb-2"
-                    >
-                        {entry.data.title}
+                    <h1 class="font-serif text-4xl lg:text-5xl leading-tight text-neutral-900 dark:text-neutral-50 mb-2">
+                        {entry.title}
                     </h1>
                 </header>
 
-                <article
-                    class="prose prose-neutral dark:prose-invert prose-p:font-serif prose-headings:font-sans prose-a:text-neutral-900 dark:prose-a:text-neutral-50 hover:prose-a:underline mb-12"
-                >
-                    <Content />
+                <article class="prose prose-neutral dark:prose-invert prose-p:font-serif prose-headings:font-sans prose-a:text-neutral-900 dark:prose-a:text-neutral-50 hover:prose-a:underline mb-12">
+                    {entry.body && <div set:html={marked.parse(entry.body)} />}
                 </article>
 
-                <dl
-                    class="grid grid-cols-[100px_1fr] gap-y-4 text-sm text-neutral-600 dark:text-neutral-400 mb-8 font-sans"
-                >
-                    <dt
-                        class="font-medium text-neutral-900 dark:text-neutral-50"
-                    >
-                        Medium
-                    </dt>
-                    <dd>{entry.data.medium}</dd>
+                <dl class="grid grid-cols-[100px_1fr] gap-y-4 text-sm text-neutral-600 dark:text-neutral-400 mb-8 font-sans">
+                    <dt class="font-medium text-neutral-900 dark:text-neutral-50">Medium</dt>
+                    <dd>{entry.medium}</dd>
 
-                    <dt
-                        class="font-medium text-neutral-900 dark:text-neutral-50"
-                    >
-                        Dimensions
-                    </dt>
-                    <dd>{entry.data.dimensions}</dd>
+                    <dt class="font-medium text-neutral-900 dark:text-neutral-50">Dimensions</dt>
+                    <dd>{entry.dimensions}</dd>
 
-                    <dt
-                        class="font-medium text-neutral-900 dark:text-neutral-50"
-                    >
-                        Status
-                    </dt>
-                    <dd
-                        class="font-medium text-neutral-900 dark:text-neutral-50"
-                    >
-                        {entry.data.status || "Private Collection"}
+                    <dt class="font-medium text-neutral-900 dark:text-neutral-50">Status</dt>
+                    <dd class="font-medium text-neutral-900 dark:text-neutral-50">
+                        {entry.status || "Private Collection"}
                     </dd>
                 </dl>
 
                 {
-                    entry.data.status === "Available" && (
+                    entry.status === "Available" && (
                         <div class="mb-12 p-6 bg-stone-50 dark:bg-neutral-800 border-l-2 border-neutral-300 dark:border-neutral-600 rounded-r-md">
                             <p class="font-serif text-neutral-700 dark:text-neutral-300 italic mb-3">
-                                "If you feel a connection to this piece, we are
-                                currently seeking a new home for it."
+                                "If you feel a connection to this piece, we are currently seeking a new home for it."
                             </p>
                             <p class="text-sm text-neutral-500 dark:text-neutral-400 font-sans">
-                                Please contact Sandra Maura directly to discuss
-                                pricing and logistics.
+                                Please contact Sandra Maura directly to discuss pricing and logistics.
                             </p>
                             <a
-                                href={`mailto:smaura108@comcast.net?subject=Inquiry regarding: ${entry.data.title}`}
+                                href={`mailto:smaura108@comcast.net?subject=Inquiry regarding: ${entry.title}`}
                                 class="inline-block mt-4 text-xs font-bold uppercase tracking-widest border-b border-black dark:border-white pb-1 hover:text-neutral-600 dark:hover:text-neutral-300 hover:border-neutral-400 dark:hover:border-neutral-500 transition-colors"
                             >
                                 Email Sandra →
@@ -214,15 +162,10 @@ const { Content } = await entry.render();
                     )
                 }
 
-                <footer
-                    class="mt-16 pt-8 border-t border-neutral-100 dark:border-neutral-800 flex justify-between text-sm uppercase tracking-widest text-neutral-500 dark:text-neutral-500 font-medium"
-                >
+                <footer class="mt-16 pt-8 border-t border-neutral-100 dark:border-neutral-800 flex justify-between text-sm uppercase tracking-widest text-neutral-500 dark:text-neutral-500 font-medium">
                     {
                         prevEntry ? (
-                            <a
-                                href={`/work/${prevEntry.slug}`}
-                                class="hover:text-black dark:hover:text-white transition-colors"
-                            >
+                            <a href={`/work/${prevEntry.slug}`} class="hover:text-black dark:hover:text-white transition-colors">
                                 ← Previous
                             </a>
                         ) : (
@@ -231,10 +174,7 @@ const { Content } = await entry.render();
                     }
                     {
                         nextEntry ? (
-                            <a
-                                href={`/work/${nextEntry.slug}`}
-                                class="hover:text-black dark:hover:text-white transition-colors"
-                            >
+                            <a href={`/work/${nextEntry.slug}`} class="hover:text-black dark:hover:text-white transition-colors">
                                 Next →
                             </a>
                         ) : (

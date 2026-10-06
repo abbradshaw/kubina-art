@@ -1,19 +1,23 @@
 ---
-import { getEntry } from "astro:content";
-import { Image } from "astro:assets";
 import Layout from "../layouts/Layout.astro";
+import { sanityClient, artworkSrc } from "../lib/sanity";
+import type { AboutPage } from "../lib/works";
 
-// 1. Fetch the biography content
-const bioEntry = await getEntry("pages", "about");
-if (!bioEntry) {
-    throw new Error("About page entry not found");
+const about = await sanityClient.fetch<AboutPage>(`*[_type == "about"][0]{
+  title,
+  image,
+  pull_quote,
+  chapters[]{label, title, text, artwork, caption}
+}`);
+
+if (!about) {
+    throw new Error("About page entry not found in Sanity");
 }
 
-const { title, image: portraitPhoto, pull_quote, chapters = [] } = bioEntry.data;
+const { image: portraitPhoto, pull_quote, chapters = [] } = about;
 ---
 
 <Layout title="About the Artist | Peter Kubina Archive">
-    <!-- Header -->
     <header class="text-center py-16 px-6 border-b border-neutral-100 dark:border-neutral-800">
         <h1 class="font-serif text-4xl md:text-6xl text-neutral-900 dark:text-gray-100 tracking-tight mb-4">
             <a href="/" class="hover:text-neutral-600 transition-colors">Peter Kubina</a>
@@ -26,13 +30,14 @@ const { title, image: portraitPhoto, pull_quote, chapters = [] } = bioEntry.data
     </header>
 
     <main class="max-w-6xl mx-auto px-6 py-16">
-        <!-- Hero Section / Introduction -->
         <section class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center mb-24">
             <div class="lg:col-span-5 flex justify-center">
                 <div class="relative bg-white dark:bg-neutral-800 p-4 shadow-2xl ring-1 ring-neutral-900/5 dark:ring-white/5 transition-transform duration-300 hover:scale-[1.02]">
                     <div class="w-64 h-80 md:w-80 md:h-[400px] overflow-hidden bg-neutral-200 dark:bg-neutral-700 relative">
-                        <Image
-                            src={portraitPhoto}
+                        <img
+                            src={artworkSrc(portraitPhoto, 800)}
+                            srcset={`${artworkSrc(portraitPhoto, 400)} 400w, ${artworkSrc(portraitPhoto, 800)} 800w`}
+                            sizes="(max-width: 1024px) 80vw, 320px"
                             alt="Portrait of Peter Kubina"
                             class="w-full h-full object-cover"
                         />
@@ -40,7 +45,7 @@ const { title, image: portraitPhoto, pull_quote, chapters = [] } = bioEntry.data
                     </div>
                 </div>
             </div>
-            
+
             <div class="lg:col-span-7 flex flex-col justify-center">
                 <span class="text-sm font-sans uppercase tracking-widest text-neutral-400 dark:text-neutral-500 mb-2">Biography</span>
                 <h2 class="font-serif text-4xl md:text-5xl text-neutral-900 dark:text-neutral-50 mb-6">
@@ -54,7 +59,7 @@ const { title, image: portraitPhoto, pull_quote, chapters = [] } = bioEntry.data
                         Peter Kubina was an artist whose work spanned six decades, moving from woodcarving and bronze sculpture to painting and digital art. His creations were not attached to a particular national, cultural, or religious tradition, but instead created a spiritual impact through a language understood by many cultures.
                     </p>
                 </div>
-                
+
                 {pull_quote && (
                     <blockquote class="mt-8 font-serif text-xl italic text-neutral-700 dark:text-neutral-300 border-l-2 border-neutral-900 dark:border-neutral-100 pl-6">
                         "{pull_quote}"
@@ -65,12 +70,10 @@ const { title, image: portraitPhoto, pull_quote, chapters = [] } = bioEntry.data
 
         <hr class="border-neutral-200 dark:border-neutral-800 my-16" />
 
-        <!-- Editorial Timeline Sections (Dynamically Editable from CMS) -->
         {chapters.map((chapter, index) => {
             const isEven = index % 2 === 0;
             return (
                 <section class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start mb-24">
-                    {/* Text Column */}
                     <div class={`lg:col-span-7 ${isEven ? 'lg:order-1' : 'lg:order-2'}`}>
                         <span class="font-serif text-base italic text-neutral-600 dark:text-neutral-300 block mb-2">
                             {chapter.label}
@@ -84,15 +87,17 @@ const { title, image: portraitPhoto, pull_quote, chapters = [] } = bioEntry.data
                             ))}
                         </div>
                     </div>
-                    
-                    {/* Image Column */}
+
                     {chapter.artwork && (
                         <div class={`lg:col-span-5 lg:sticky lg:top-24 mt-8 lg:mt-0 ${isEven ? 'lg:order-2' : 'lg:order-1'}`}>
                             <figure class="group">
                                 <div class="overflow-hidden bg-neutral-100 dark:bg-neutral-800 p-3 shadow-lg border border-neutral-200/50 dark:border-neutral-700/50">
-                                    <Image
-                                        src={chapter.artwork}
+                                    <img
+                                        src={artworkSrc(chapter.artwork, 800)}
+                                        srcset={`${artworkSrc(chapter.artwork, 400)} 400w, ${artworkSrc(chapter.artwork, 800)} 800w`}
+                                        sizes="(max-width: 1024px) 90vw, 40vw"
                                         alt={chapter.caption || chapter.title}
+                                        loading="lazy"
                                         class="w-full object-cover transition-all duration-500"
                                     />
                                 </div>
@@ -108,7 +113,6 @@ const { title, image: portraitPhoto, pull_quote, chapters = [] } = bioEntry.data
             );
         })}
 
-        <!-- Gallery Link CTA -->
         <div class="mt-16 text-center border-t border-neutral-100 dark:border-neutral-800 pt-16">
             <a
                 href="/"
