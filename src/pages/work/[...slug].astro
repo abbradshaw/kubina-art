@@ -48,109 +48,162 @@ const nextEntry = index === ordered.length - 1 ? ordered[0] : ordered[index + 1]
                 href="/"
                 class="text-base font-medium tracking-widest uppercase hover:underline underline-offset-4 decoration-1"
             >
-                ← Back to Collection
+                <span class="sm:hidden">← Gallery</span>
+                <span class="hidden sm:inline">← Back to Full Gallery</span>
             </a>
 
-            <div class="flex gap-8">
-                <a
-                    href={`/work/${prevEntry.slug}`}
-                    class="group flex items-center gap-2 text-sm uppercase tracking-widest text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-gray-100 transition-colors"
-                >
-                    <span class="w-8 h-8 rounded-full border border-neutral-300 group-hover:border-neutral-900 dark:border-neutral-700 dark:group-hover:border-gray-100 flex items-center justify-center transition-colors">←</span>
-                    <span class="hidden md:inline">Prev</span>
-                </a>
-                <a
-                    href={`/work/${nextEntry.slug}`}
-                    class="group flex items-center gap-2 text-sm uppercase tracking-widest text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-gray-100 transition-colors"
-                >
-                    <span class="hidden md:inline">Next</span>
-                    <span class="w-8 h-8 rounded-full border border-neutral-300 group-hover:border-neutral-900 dark:border-neutral-700 dark:group-hover:border-gray-100 flex items-center justify-center transition-colors">→</span>
-                </a>
+            <a
+                href="/"
+                class="absolute left-1/2 -translate-x-1/2 font-serif text-xl text-neutral-900 dark:text-gray-100 tracking-tight hover:text-neutral-600 dark:hover:text-gray-300 transition-colors"
+            >
+                Peter Kubina
+            </a>
+
+            <div class="hidden md:flex gap-8">
+                {
+                    prevEntry && (
+                        <a
+                            href={`/work/${prevEntry.slug}`}
+                            class="text-base font-medium tracking-widest uppercase hover:underline underline-offset-4 decoration-1"
+                        >
+                            Previous
+                        </a>
+                    )
+                }
+                {
+                    nextEntry && (
+                        <a
+                            href={`/work/${nextEntry.slug}`}
+                            class="text-base font-medium tracking-widest uppercase hover:underline underline-offset-4 decoration-1"
+                        >
+                            Next
+                        </a>
+                    )
+                }
             </div>
+        </div>
+
+        <div class="md:hidden flex justify-between border-t border-neutral-100 dark:border-neutral-800/50 px-6 py-2.5 bg-white/50 dark:bg-[#171717]/50">
+            {
+                prevEntry ? (
+                    <a
+                        href={`/work/${prevEntry.slug}`}
+                        class="text-sm font-medium tracking-widest uppercase hover:underline underline-offset-4 decoration-1"
+                    >
+                        ← Previous
+                    </a>
+                ) : (
+                    <span />
+                )
+            }
+            {
+                nextEntry ? (
+                    <a
+                        href={`/work/${nextEntry.slug}`}
+                        class="text-sm font-medium tracking-widest uppercase hover:underline underline-offset-4 decoration-1"
+                    >
+                        Next →
+                    </a>
+                ) : (
+                    <span />
+                )
+            }
         </div>
     </nav>
 
-    <main class="pt-24 pb-24 px-6 max-w-7xl mx-auto">
-        <article class="max-w-5xl mx-auto">
-            <header class="mb-16 text-center">
-                <h1 class="font-serif text-4xl md:text-6xl text-neutral-900 dark:text-gray-100 tracking-tight mb-4">
-                    {entry.title}
-                </h1>
-                <p class="text-base text-neutral-500 uppercase tracking-wide">
-                    {entry.medium}
-                    {entry.dimensions && ` — ${entry.dimensions}`}
-                </p>
-            </header>
-
-            <figure class="mb-16 artwork-figure relative">
+    <main class="min-h-screen w-full grid grid-cols-1 lg:grid-cols-12">
+        <section
+            class="lg:col-span-7 xl:col-span-8 bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center pt-28 pb-6 px-6 lg:p-12 min-h-[50vh] lg:h-screen lg:sticky lg:top-0 order-1 lg:order-1"
+        >
+            <div class="relative w-full h-full flex items-center justify-center artwork-wrap">
                 <img
-                    src={artworkSrc(entry.image, 1400)}
+                    src={artworkSrc(entry.image, 1600)}
+                    srcset={`${artworkSrc(entry.image, 800)} 800w, ${artworkSrc(entry.image, 1200)} 1200w, ${artworkSrc(entry.image, 1600)} 1600w`}
+                    sizes="(max-width: 1024px) 100vw, 66vw"
                     alt={entry.title}
-                    class="w-full h-auto"
-                    loading="eager"
+                    class="w-auto h-auto max-w-full max-h-[75vh] object-contain shadow-2xl shadow-black/5"
                     draggable="false"
                 />
                 <div class="absolute inset-0 pointer-events-none"></div>
-            </figure>
+            </div>
+        </section>
 
-            <div class="grid md:grid-cols-[2fr_1fr] gap-16">
-                <div class="prose prose-lg prose-neutral dark:prose-invert max-w-none">
-                    {entry.description && (
-                        <Fragment set:html={marked.parse(entry.description)} />
-                    )}
-                </div>
+        <section
+            class="lg:col-span-5 xl:col-span-4 bg-white dark:bg-neutral-900 p-8 lg:p-16 flex flex-col justify-center min-h-[50vh] order-2 lg:order-2"
+        >
+            <div class="max-w-md mx-auto w-full pt-12 lg:pt-0">
+                <header class="mb-6 border-b border-neutral-100 dark:border-neutral-800 pb-6">
+                    <span class="block text-xs font-bold tracking-widest uppercase text-neutral-500 dark:text-neutral-400 mb-3">
+                        {entry.category}
+                    </span>
+                    <h1 class="font-serif text-4xl lg:text-5xl leading-tight text-neutral-900 dark:text-neutral-50 mb-2">
+                        {entry.title}
+                    </h1>
+                </header>
 
-                <aside class="space-y-8 text-sm">
-                    <div>
-                        <dt class="uppercase tracking-widest text-xs text-neutral-500 mb-1">Year</dt>
-                        <dd class="text-neutral-900 dark:text-gray-100 font-medium text-lg">{entry.year}</dd>
-                    </div>
-                    <div>
-                        <dt class="uppercase tracking-widest text-xs text-neutral-500 mb-1">Category</dt>
-                        <dd class="text-neutral-900 dark:text-gray-100 font-medium text-lg">{entry.category}</dd>
-                    </div>
-                    <div>
-                        <dt class="uppercase tracking-widest text-xs text-neutral-500 mb-1">Status</dt>
-                        <dd class="text-neutral-900 dark:text-gray-100 font-medium text-lg">{entry.status || "Available"}</dd>
-                    </div>
-                    {entry.medium && (
-                        <div>
-                            <dt class="uppercase tracking-widest text-xs text-neutral-500 mb-1">Medium</dt>
-                            <dd class="text-neutral-900 dark:text-gray-100 font-medium text-lg">{entry.medium}</dd>
+                <article class="prose prose-neutral dark:prose-invert prose-p:font-serif prose-headings:font-sans prose-a:text-neutral-900 dark:prose-a:text-neutral-50 hover:prose-a:underline mb-12">
+                    {entry.description && <div set:html={marked.parse(entry.description)} />}
+                </article>
+
+                <dl class="grid grid-cols-[100px_1fr] gap-y-4 text-sm text-neutral-600 dark:text-neutral-400 mb-8 font-sans">
+                    <dt class="font-medium text-neutral-900 dark:text-neutral-50">Medium</dt>
+                    <dd>{entry.medium}</dd>
+
+                    <dt class="font-medium text-neutral-900 dark:text-neutral-50">Dimensions</dt>
+                    <dd>{entry.dimensions}</dd>
+
+                    <dt class="font-medium text-neutral-900 dark:text-neutral-50">Status</dt>
+                    <dd class="font-medium text-neutral-900 dark:text-neutral-50">
+                        {entry.status || "Private Collection"}
+                    </dd>
+                </dl>
+
+                {
+                    entry.status === "Available" && (
+                        <div class="mb-12 p-6 bg-stone-50 dark:bg-neutral-800 border-l-2 border-neutral-300 dark:border-neutral-600 rounded-r-md">
+                            <p class="font-serif text-neutral-700 dark:text-neutral-300 italic mb-3">
+                                "If you feel a connection to this piece, we are currently seeking a new home for it."
+                            </p>
+                            <p class="text-sm text-neutral-500 dark:text-neutral-400 font-sans">
+                                Please contact Sandra Maura directly to discuss pricing and logistics.
+                            </p>
+                            <a
+                                href={`mailto:smaura108@comcast.net?subject=Inquiry regarding: ${entry.title}`}
+                                class="inline-block mt-4 text-xs font-bold uppercase tracking-widest border-b border-black dark:border-white pb-1 hover:text-neutral-600 dark:hover:text-neutral-300 hover:border-neutral-400 dark:hover:border-neutral-500 transition-colors"
+                            >
+                                Email Sandra →
+                            </a>
                         </div>
-                    )}
-                </aside>
-            </div>
+                    )
+                }
 
-            <div class="mt-24 flex justify-between items-center">
-                <a
-                    href={`/work/${prevEntry.slug}`}
-                    class="group flex items-center gap-4 text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-gray-100 transition-colors"
-                >
-                    <span class="w-12 h-12 rounded-full border border-neutral-300 group-hover:border-neutral-900 dark:border-neutral-700 dark:group-hover:border-gray-100 flex items-center justify-center text-xl transition-colors">←</span>
-                    <div class="text-left">
-                        <span class="block text-xs uppercase tracking-widest">Previous</span>
-                        <span class="font-serif text-lg">{prevEntry.title}</span>
-                    </div>
-                </a>
-
-                <a
-                    href={`/work/${nextEntry.slug}`}
-                    class="group flex items-center gap-4 text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-gray-100 transition-colors"
-                >
-                    <div class="text-right">
-                        <span class="block text-xs uppercase tracking-widest">Next</span>
-                        <span class="font-serif text-lg">{nextEntry.title}</span>
-                    </div>
-                    <span class="w-12 h-12 rounded-full border border-neutral-300 group-hover:border-neutral-900 dark:border-neutral-700 dark:group-hover:border-gray-100 flex items-center justify-center text-xl transition-colors">→</span>
-                </a>
+                <footer class="mt-16 pt-8 border-t border-neutral-100 dark:border-neutral-800 flex justify-between text-sm uppercase tracking-widest text-neutral-500 dark:text-neutral-500 font-medium">
+                    {
+                        prevEntry ? (
+                            <a href={`/work/${prevEntry.slug}`} class="hover:text-black dark:hover:text-white transition-colors">
+                                ← Previous
+                            </a>
+                        ) : (
+                            <span />
+                        )
+                    }
+                    {
+                        nextEntry ? (
+                            <a href={`/work/${nextEntry.slug}`} class="hover:text-black dark:hover:text-white transition-colors">
+                                Next →
+                            </a>
+                        ) : (
+                            <span />
+                        )
+                    }
+                </footer>
             </div>
-        </article>
+        </section>
     </main>
 </Layout>
 
 <style>
-    .artwork-figure img {
+    .artwork-wrap img {
         -webkit-user-drag: none;
         user-select: none;
         -webkit-user-select: none;
@@ -158,7 +211,7 @@ const nextEntry = index === ordered.length - 1 ? ordered[0] : ordered[index + 1]
 </style>
 
 <script>
-    document.querySelectorAll(".artwork-figure img").forEach((img) => {
+    document.querySelectorAll(".artwork-wrap img").forEach((img) => {
         img.addEventListener("contextmenu", (e) => e.preventDefault());
     });
 </script>
