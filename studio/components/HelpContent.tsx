@@ -44,6 +44,23 @@ export default function HelpContent() {
             </Box>
           </Card>
 
+          <Card padding={5} radius={3} shadow={1}>
+            <Heading size={3}>Working with Drafts and Unpublished Changes</Heading>
+            <Box style={{marginTop: 16}}>
+              <Step n={1} text="Every artwork has a status badge at the top: LIVE, DRAFT, or CHANGED" />
+              <Step n={2} text="DRAFT = saved in the editor but NOT on the website yet" />
+              <Step n={3} text="CHANGED = has edits that have not been published" />
+              <Step n={4} text="To make any changes live, click the BLUE Publish button in the top-right" />
+            </Box>
+            <Card padding={3} radius={2} tone="caution" style={{marginTop: 16}}>
+              <Text size={2}>
+                <strong>Important:</strong> Gray Save only saves your work in the editor.
+                Only clicking the BLUE Publish button updates the website.
+                You can save as many times as you want before publishing.
+              </Text>
+            </Card>
+          </Card>
+
           <Card padding={5} radius={3} shadow={1} tone="primary">
             <Heading size={3}>Reordering Categories on the Homepage</Heading>
             <Box style={{marginTop: 16}}>

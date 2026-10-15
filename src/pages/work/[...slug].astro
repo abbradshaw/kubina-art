@@ -27,8 +27,9 @@ if (!work) return Astro.redirect("/404");
 			<p class="text-base text-neutral-500 uppercase tracking-wide">{work.medium} {work.dimensions && `— ${work.dimensions}`}</p>
 		</header>
 
-		<figure class="mb-12">
-			<img src={artworkSrc(work.image, 1200)} alt={work.title} class="w-full h-auto" loading="eager" />
+		<figure class="mb-12 artwork-figure relative">
+			<img src={artworkSrc(work.image, 1200)} alt={work.title} class="w-full h-auto" loading="eager" draggable="false" />
+			<div class="absolute inset-0 pointer-events-none"></div>
 		</figure>
 
 		<div class="grid md:grid-cols-[2fr_1fr] gap-12">
@@ -52,3 +53,17 @@ if (!work) return Astro.redirect("/404");
 		</div>
 	</article>
 </Layout>
+
+<style>
+	.artwork-figure img {
+		-webkit-user-drag: none;
+		user-select: none;
+		-webkit-user-select: none;
+	}
+</style>
+
+<script>
+	document.querySelectorAll(".artwork-figure img").forEach((img) => {
+		img.addEventListener("contextmenu", (e) => e.preventDefault());
+	});
+</script>

@@ -25,16 +25,17 @@ const { works, categoryOrder = ["Painting", "Drawing", "Sculpture", "Digital"] }
             works.map((work) => (
                 <a href={`/work/${work.slug}`} class="gallery-item group block break-inside-avoid mb-8" data-category={work.category}>
                     <article>
-                        <div class="relative overflow-hidden bg-neutral-100 dark:bg-neutral-800">
+                        <div class="relative overflow-hidden bg-neutral-100 dark:bg-neutral-800 artwork-wrap">
                             <img
                                 src={artworkSrc(work.image, 800)}
                                 srcset={`${artworkSrc(work.image, 400)} 400w, ${artworkSrc(work.image, 800)} 800w, ${artworkSrc(work.image, 1200)} 1200w`}
                                 sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                                 alt={work.title}
                                 loading="lazy"
-                                class="w-full h-auto object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                                draggable="false"
+                                class="w-full h-auto object-cover transition-transform duration-700 ease-out group-hover:scale-105 select-none"
                             />
-                            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-500" />
+                            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-500 pointer-events-none" />
                         </div>
                         <div class="mt-4 text-center">
                             <h3 class="font-serif text-lg text-neutral-900 dark:text-neutral-50 group-hover:text-neutral-600 dark:group-hover:text-neutral-300 transition-colors">{work.title}</h3>
@@ -53,6 +54,14 @@ const { works, categoryOrder = ["Painting", "Drawing", "Sculpture", "Digital"] }
     </div>
 </section>
 
+<style>
+    .artwork-wrap img {
+        -webkit-user-drag: none;
+        user-select: none;
+        -webkit-user-select: none;
+    }
+</style>
+
 <script>
     const buttons = document.querySelectorAll(".filter-btn");
     const items = document.querySelectorAll(".gallery-item");
@@ -69,7 +78,7 @@ const { works, categoryOrder = ["Painting", "Drawing", "Sculpture", "Digital"] }
         btn.addEventListener("click", () => {
             const filterValue = btn.getAttribute("data-filter") || "all";
             applyFilter(filterValue);
-            const newUrl = new URL(window.location.href);
+            const newUrl = new URL(window.href);
             if (filterValue === "all") { newUrl.searchParams.delete("filter"); }
             else { newUrl.searchParams.set("filter", filterValue); }
             window.history.pushState({}, "", newUrl);
@@ -104,4 +113,9 @@ const { works, categoryOrder = ["Painting", "Drawing", "Sculpture", "Digital"] }
         }
         if (noResults) { noResults.classList.toggle("hidden", filteredItems.length > 0); }
     }
+
+    // Disable right-click on artwork images
+    document.querySelectorAll(".artwork-wrap img").forEach((img) => {
+        img.addEventListener("contextmenu", (e) => e.preventDefault());
+    });
 </script>
