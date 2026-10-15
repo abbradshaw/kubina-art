@@ -37,12 +37,34 @@ export async function getAllWorks(): Promise<ArtworkSummary[]> {
   return sanityClient.fetch(`*[_type == "work"] ${WORK_SUMMARY}`)
 }
 
-const CATEGORY_ORDER = ['Painting', 'Drawing', 'Sculpture', 'Digital']
+export async function getWorkBySlug(slug: string): Promise<(ArtworkSummary & {dimensions?: string; description?: string; status?: string}) | null> {
+  return sanityClient.fetch(`*[_type == "work" && slug.current == $slug][0] {
+    title,
+    "slug": slug.current,
+    category,
+    medium,
+    year,
+    image,
+    dimensions,
+    description,
+    status
+  }`, {slug})
+}
 
-export function sortWorks<T extends {category: string; title?: string}>(works: T[]): T[] {
+// Fetch category order from Sanity settings. Falls back to default.
+export async function getCategoryOrder(): Promise<string[]> {
+  const result = await sanityClient.fetch(`*[_type == "settings"][0].categoryOrder`)
+  if (Array.isArray(result) && result.length > 0) {
+    return result as string[]
+  }
+  return ['Painting', 'Drawing', 'Sculpture', 'Digital']
+}
+
+export async function sortWorks<T extends {category: string; title?: string}>(works: T[]): Promise<T[]> {
+  const categoryOrder = await getCategoryOrder()
   return works.sort((a, b) => {
-    const catA = CATEGORY_ORDER.indexOf(a.category)
-    const catB = CATEGORY_ORDER.indexOf(b.category)
+    const catA = categoryOrder.indexOf(a.category)
+    const catB = categoryOrder.indexOf(b.category)
     if (catA !== catB) return catA - catB
     return (a.title ?? '').localeCompare(b.title ?? '')
   })

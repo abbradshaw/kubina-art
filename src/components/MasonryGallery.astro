@@ -4,18 +4,20 @@ import type { ArtworkSummary } from "../lib/works";
 
 interface Props {
     works: ArtworkSummary[];
+    categoryOrder?: string[];
 }
 
-const { works } = Astro.props;
+const { works, categoryOrder = ["Painting", "Drawing", "Sculpture", "Digital"] } = Astro.props;
 ---
 
 <section class="max-w-7xl mx-auto px-6 py-12">
     <div class="flex flex-wrap justify-center gap-6 mb-16 text-base tracking-widest uppercase font-medium text-neutral-500 dark:text-neutral-400">
         <button class="filter-btn hover:text-black dark:hover:text-white transition-colors active text-black dark:text-white border-b-2 border-black dark:border-white cursor-pointer" data-filter="all">All Works</button>
-        <button class="filter-btn hover:text-black dark:hover:text-white transition-colors border-b-2 border-transparent hover:border-neutral-200 dark:hover:border-neutral-700 cursor-pointer" data-filter="Painting">Paintings</button>
-        <button class="filter-btn hover:text-black dark:hover:text-white transition-colors border-b-2 border-transparent hover:border-neutral-200 dark:hover:border-neutral-700 cursor-pointer" data-filter="Drawing">Drawings</button>
-        <button class="filter-btn hover:text-black dark:hover:text-white transition-colors border-b-2 border-transparent hover:border-neutral-200 dark:hover:border-neutral-700 cursor-pointer" data-filter="Sculpture">Sculptures</button>
-        <button class="filter-btn hover:text-black dark:hover:text-white transition-colors border-b-2 border-transparent hover:border-neutral-200 dark:hover:border-neutral-700 cursor-pointer" data-filter="Digital">Digital</button>
+        {categoryOrder.map((cat) => (
+            <button class="filter-btn hover:text-black dark:hover:text-white transition-colors border-b-2 border-transparent hover:border-neutral-200 dark:hover:border-neutral-700 cursor-pointer" data-filter={cat}>
+                {cat === "Digital" ? "Digital" : cat + "s"}
+            </button>
+        ))}
     </div>
 
     <div class="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8" id="gallery-grid">

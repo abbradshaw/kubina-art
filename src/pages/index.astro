@@ -1,12 +1,18 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import MasonryGallery from "../components/MasonryGallery.astro";
-import { getAllWorks } from "../lib/works";
+import { getAllWorks, getCategoryOrder } from "../lib/works";
 
 const allWorks = await getAllWorks();
-const sortedWorks = allWorks.sort(
-	(a, b) => parseInt(b.year) - parseInt(a.year),
-);
+const categoryOrder = await getCategoryOrder();
+
+// Sort by category order first, then by year (newest first) within each category
+const sortedWorks = allWorks.sort((a, b) => {
+	const catA = categoryOrder.indexOf(a.category);
+	const catB = categoryOrder.indexOf(b.category);
+	if (catA !== catB) return catA - catB;
+	return parseInt(b.year) - parseInt(a.year);
+});
 ---
 
 <Layout
@@ -35,6 +41,6 @@ const sortedWorks = allWorks.sort(
 	</header>
 
 	<main class="mb-12">
-		<MasonryGallery works={sortedWorks} />
+		<MasonryGallery works={sortedWorks} categoryOrder={categoryOrder} />
 	</main>
 </Layout>
