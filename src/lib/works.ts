@@ -80,6 +80,7 @@ export interface SiteSettings {
 export async function getSettings(): Promise<SiteSettings> {
   return sanityClient.fetch(`*[_type == "settings" && _id == "settings"][0]{
     categoryOrder,
+    showStatus,
     showPurchaseInquiry,
     contactEmail
   }`) || {}
