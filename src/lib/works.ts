@@ -72,6 +72,7 @@ export async function sortWorks<T extends {category: string; title?: string}>(wo
 
 export interface SiteSettings {
   categoryOrder?: string[]
+  showStatus?: boolean
   showPurchaseInquiry?: boolean
   contactEmail?: string
 }

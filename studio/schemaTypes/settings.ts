@@ -7,7 +7,7 @@ export const settings = defineType({
   __experimental_actions: ['update', 'publish'],
   preview: {
     prepare() {
-      return {title: 'Site Settings', subtitle: 'Homepage category order'}
+      return {title: 'Site Settings', subtitle: 'Category order, purchase toggle, contact email'}
     },
   },
   fields: [
@@ -40,6 +40,28 @@ export const settings = defineType({
           }
           return true
         }),
+    }),
+    defineField({
+      name: 'showStatus',
+      title: 'Show Artwork Status',
+      description: 'When ON, artwork detail pages show the Status field (Available, Sold, etc.). When OFF, status is hidden from public view.',
+      type: 'boolean',
+      initialValue: true,
+    }),
+    defineField({
+      name: 'showPurchaseInquiry',
+      title: 'Show Purchase Inquiry Box',
+      description: 'When ON, artwork detail pages show an "Email about this piece" box. When OFF, the site reads as a gallery/archive only.',
+      type: 'boolean',
+      initialValue: false,
+    }),
+    defineField({
+      name: 'contactEmail',
+      title: 'Contact Email Address',
+      description: 'The email address used for purchase inquiries and contact links on the website.',
+      type: 'string',
+      initialValue: 'smaura108@comcast.net',
+      validation: (Rule) => Rule.email(),
     }),
   ],
 })

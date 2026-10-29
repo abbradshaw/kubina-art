@@ -30,6 +30,7 @@ if (!entry) return Astro.redirect("/404");
 
 const contactEmail = settings?.contactEmail || "smaura108@comcast.net";
 const showPurchaseInquiry = settings?.showPurchaseInquiry ?? false;
+const showStatus = settings?.showStatus ?? true;
 
 const categoryOrder = await getCategoryOrder();
 const ordered = allWorks.sort((a, b) => {
