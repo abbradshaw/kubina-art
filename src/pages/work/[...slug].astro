@@ -157,10 +157,14 @@ const nextEntry = index === ordered.length - 1 ? ordered[0] : ordered[index + 1]
                     <dt class="font-medium text-neutral-900 dark:text-neutral-50">Dimensions</dt>
                     <dd>{entry.dimensions}</dd>
 
-                    <dt class="font-medium text-neutral-900 dark:text-neutral-50">Status</dt>
-                    <dd class="font-medium text-neutral-900 dark:text-neutral-50">
-                        {entry.status || "Private Collection"}
-                    </dd>
+                    {showStatus && (
+                        <>
+                            <dt class="font-medium text-neutral-900 dark:text-neutral-50">Status</dt>
+                            <dd class="font-medium text-neutral-900 dark:text-neutral-50">
+                                {entry.status || "Private Collection"}
+                            </dd>
+                        </>
+                    )}
                 </dl>
 
                 {

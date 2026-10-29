@@ -1,10 +1,16 @@
 import type {StructureResolver} from 'sanity/structure'
 import HelpContent from './components/HelpContent'
+import StartHere from './components/StartHere'
 
 export const structure: StructureResolver = (S) =>
   S.list()
     .title('Peter Kubina Art — Editor Menu')
     .items([
+      S.listItem()
+        .title('⭐ Start here — What do you want to do?')
+        .icon(() => '⭐')
+        .child(S.component().title('Start here').component(StartHere)),
+      S.divider(),
       S.listItem()
         .title('How to Use This Editor')
         .icon(() => '❓')
