@@ -2,7 +2,7 @@
 import Layout from "../../layouts/Layout.astro";
 import { marked } from "marked";
 import { sanityClient, artworkSrc } from "../../lib/sanity";
-import { getAllWorks, getCategoryOrder } from "../../lib/works";
+import { getAllWorks, getCategoryOrder, getSettings } from "../../lib/works";
 
 export async function getStaticPaths() {
     const works = await getAllWorks();
@@ -20,12 +20,16 @@ export async function getStaticPaths() {
 
 const { slug } = Astro.params;
 
-const [entry, allWorks] = await Promise.all([
+const [entry, allWorks, settings] = await Promise.all([
     sanityClient.fetch(`*[_type == "work" && slug.current == $slug][0]`, { slug }),
     sanityClient.fetch(`*[_type == "work"]{title, "slug": slug.current, category}`),
+    getSettings(),
 ]);
 
 if (!entry) return Astro.redirect("/404");
+
+const contactEmail = settings?.contactEmail || "smaura108@comcast.net";
+const showPurchaseInquiry = settings?.showPurchaseInquiry ?? false;
 
 const categoryOrder = await getCategoryOrder();
 const ordered = allWorks.sort((a, b) => {
@@ -159,7 +163,7 @@ const nextEntry = index === ordered.length - 1 ? ordered[0] : ordered[index + 1]
                 </dl>
 
                 {
-                    entry.status === "Available" && (
+                    showPurchaseInquiry && entry.status === "Available" && (
                         <div class="mb-12 p-6 bg-stone-50 dark:bg-neutral-800 border-l-2 border-neutral-300 dark:border-neutral-600 rounded-r-md">
                             <p class="font-serif text-neutral-700 dark:text-neutral-300 italic mb-3">
                                 "If you feel a connection to this piece, we are currently seeking a new home for it."
@@ -168,7 +172,7 @@ const nextEntry = index === ordered.length - 1 ? ordered[0] : ordered[index + 1]
                                 Please contact Sandra Maura directly to discuss pricing and logistics.
                             </p>
                             <a
-                                href={`mailto:smaura108@comcast.net?subject=Inquiry regarding: ${entry.title}`}
+                                href={`mailto:${contactEmail}?subject=Inquiry regarding: ${entry.title}`}
                                 class="inline-block mt-4 text-xs font-bold uppercase tracking-widest border-b border-black dark:border-white pb-1 hover:text-neutral-600 dark:hover:text-neutral-300 hover:border-neutral-400 dark:hover:border-neutral-500 transition-colors"
                             >
                                 Email Sandra →

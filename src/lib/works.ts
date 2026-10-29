@@ -69,3 +69,17 @@ export async function sortWorks<T extends {category: string; title?: string}>(wo
     return (a.title ?? '').localeCompare(b.title ?? '')
   })
 }
+
+export interface SiteSettings {
+  categoryOrder?: string[]
+  showPurchaseInquiry?: boolean
+  contactEmail?: string
+}
+
+export async function getSettings(): Promise<SiteSettings> {
+  return sanityClient.fetch(`*[_type == "settings" && _id == "settings"][0]{
+    categoryOrder,
+    showPurchaseInquiry,
+    contactEmail
+  }`) || {}
+}
